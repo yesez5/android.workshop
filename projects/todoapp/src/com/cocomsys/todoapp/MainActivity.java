@@ -1,12 +1,11 @@
 package com.cocomsys.todoapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
+import com.cocomsys.todoapp.common.AppConstants;
 
 import java.util.ArrayList;
 
@@ -50,6 +49,21 @@ public class MainActivity extends Activity {
 				addTask();
 			}
 		});
+
+		lvTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				String selectedTask = String.valueOf(parent.getItemAtPosition(position));
+				openDetailsView(selectedTask, position);
+			}
+		});
+	}
+
+	private void openDetailsView(String selectedTask, int pos){
+		Intent detailsIntent = new Intent(this, DetailsActivity.class);
+		detailsIntent.putExtra(AppConstants.TASK_TITLE_KEY, selectedTask);
+		detailsIntent.putExtra(AppConstants.TASK_POS_KEY, pos);
+		startActivity(detailsIntent);
 	}
 
 	private void addTask(){
