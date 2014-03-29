@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">todoapp</string>
+    <string name="app_name">todo</string>
     <string name="enter_task">ingrese una tarea</string>
     <string name="ok">OK</string>
     <string name="insert_a_value">ingrese un valor</string>
     <string name="dummy_task_title">tarea #%d</string>
+    <string name="something_goes_wrong">algo salió mal</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+    <string name="delete">Eliminar</string>
+    <string name="are_you_sure">está seguro?</string>
+
+    <string-array name="menu">
+        <item>Detalles</item>
+        <item>Eliminar</item>
+    </string-array>
 </resources>

@@ -32,7 +32,9 @@ public class DetailsActivity extends Activity {
 	private void getParams(){
 		String selectedTask = getIntent().getStringExtra(AppConstants.TASK_TITLE_KEY);
 		int selectedTaskPos = getIntent().getIntExtra(AppConstants.TASK_POS_KEY, 0);
+		int selectedTaskId = getIntent().getIntExtra(AppConstants.TASK_ID_KEY, 0);
 
-		this.txtTaskTitle.setText(String.format("tarea: %s posición: %d", selectedTask, selectedTaskPos));
+		this.txtTaskTitle.setText(String.format("tarea: %s posición: %d id: %d",
+				selectedTask, selectedTaskPos, selectedTaskId));
 	}
 }
