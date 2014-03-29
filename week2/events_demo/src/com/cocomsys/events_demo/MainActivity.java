@@ -11,10 +11,9 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	private static final String TAG = MainActivity.class.getSimpleName();
+	private static final String GREET_KEY = "GreetKey";
 	Button btnGreet;
 	TextView tvGreet;
-
-	final String GREET_KEY = "GreetKey";
 
 	/**
 	 * Called when the activity is first created.
@@ -23,6 +22,7 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		Log.d("State", "onCreate");
 
 		btnGreet = (Button)findViewById(R.id.btn_greet);
 		btnGreet.setOnClickListener(new View.OnClickListener() {
@@ -45,5 +45,36 @@ public class MainActivity extends Activity {
 		String greet = String.valueOf(tvGreet.getText());
 		Log.i(TAG, "saving in bundle");
 		outState.putString(GREET_KEY, greet);
+	}
+
+	@Override
+	public void onStart() {
+		Log.d("State", "onStart");
+		super.onStart();
+	}
+	@Override
+	public void onResume() {
+		Log.d("State", "onResume");
+		super.onResume();
+	}
+	@Override
+	public void onPause() {
+		Log.d("State", "onPause");
+		super.onPause();
+	}
+	@Override
+	public void onStop() {
+		Log.d("State", "onStop");
+		super.onStop();
+	}
+	@Override
+	public void onDestroy() {
+		Log.d("State", "onDestroy");
+		super.onDestroy();
+	}
+	@Override
+	public void onRestart() {
+		Log.d("State", "onRestart");
+		super.onRestart();
 	}
 }
