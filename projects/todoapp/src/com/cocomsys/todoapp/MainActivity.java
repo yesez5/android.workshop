@@ -14,7 +14,6 @@ import android.widget.*;
 import com.cocomsys.todoapp.common.AppConstants;
 import com.cocomsys.todoapp.models.Task;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends Activity {
@@ -24,7 +23,7 @@ public class MainActivity extends Activity {
 	ListView lvTasks;
 	EditText txtSaveTask;
 	Button btnSaveTask;
-	TaskListAdapter adapter;
+	BaseTaskListAdapter adapter;
 
 	private String[] getContextualMenu(){
 		return getResources().getStringArray(R.array.menu);
@@ -42,7 +41,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-		if (v.getId()==R.id.lv_tasks) {
+		if (v.getId() == R.id.lv_tasks) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 			menu.setHeaderTitle(Task.getTasks().get(info.position).getName());
 			String[] menuItems = getContextualMenu();
@@ -65,7 +64,7 @@ public class MainActivity extends Activity {
 		//popular con datos x defecto
 		//generateDummyData();
 
-		adapter = new TaskListAdapter(this, R.layout.task_list_item_layout, Task.getTasks());
+		adapter = new BaseTaskListAdapter(this, R.layout.task_list_item_layout, Task.getTasks());
 		lvTasks.setAdapter(adapter);
 		registerForContextMenu(lvTasks);
 
