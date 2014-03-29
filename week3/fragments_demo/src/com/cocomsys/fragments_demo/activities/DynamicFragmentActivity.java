@@ -24,10 +24,13 @@ public class DynamicFragmentActivity extends FragmentActivity {
 		Fragment clockFragment = new ClockFragment();
 		Fragment calcFragment = new CalcFragment();
 		FragmentManager manager = getSupportFragmentManager();
+		//Start a series of edit operations on the Fragments associated with this FragmentManager.
 		manager.beginTransaction()
-				.add(R.id.layout_frg_clock, clockFragment)
+				.add(R.id.layout_frg_clock, clockFragment) //Add a fragment to the activity state
 				.add(R.id.layout_frg_calc,  calcFragment)
 				.commit();
+		//finish transation
+		//Schedules a commit of this transaction. The commit does not happen immediately; it will be scheduled as work on the main thread to be done the next time that thread is ready.
 	}
 
 }
