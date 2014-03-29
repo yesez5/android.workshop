@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fragmentos</string>
+    <string name="dummy_clock">soy un reloj!</string>
+    <string name="dummy_calc">soy una calculadora!</string>
+</resources>
