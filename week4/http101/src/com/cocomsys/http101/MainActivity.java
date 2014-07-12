@@ -1,6 +1,7 @@
 package com.cocomsys.http101;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -50,7 +51,20 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	private ProgressDialog progress;
+	private void isShowProgress(boolean isLoading){
+		if(isLoading){
+			progress = ProgressDialog.show(this,
+					getString(R.string.app_name),
+					getString(R.string.loading),
+					true, true);
+		}else if(progress != null){
+			progress.dismiss();
+		}
+	}
+
 	private void getData(HttpMethod method){
+		isShowProgress(true);
 		this.modelList.clear();
 		this.adapter.notifyDataSetChanged();
 
@@ -58,6 +72,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void setUiFromData(ArrayList<VideoItem> data){
+		isShowProgress(false);
 		this.modelList.addAll(data);
 		this.adapter.notifyDataSetChanged();
 	}
