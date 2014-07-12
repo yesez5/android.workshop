@@ -4,11 +4,15 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class HttpService {
 
@@ -62,6 +66,41 @@ public class HttpService {
 		}
 
 		return result.toString();
+	}
+
+	public ArrayList<VideoItem> parseToModel(String data){
+		ArrayList<VideoItem> items = new ArrayList<VideoItem>();
+		try {
+			JSONObject root = new JSONObject(data);
+			JSONObject dataObj = root.getJSONObject(VideoItem.DATA_FIELD);
+			JSONArray itemsArray = dataObj.getJSONArray(VideoItem.ITEMS_FIELD);
+
+			for(int i = 0; i < itemsArray.length(); i++){
+				JSONObject jsonItem = itemsArray.getJSONObject(i);
+				VideoItem modelToAdd = parseToModel(jsonItem);
+				items.add(modelToAdd);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return items;
+	}
+
+	private VideoItem parseToModel(JSONObject jsonModel){
+		VideoItem itemToAdd = null;
+		try {
+			itemToAdd = new VideoItem(
+					jsonModel.getString(VideoItem.ID_FIELD),
+					jsonModel.getString(VideoItem.UPLOADED_FIELD),
+					jsonModel.getString(VideoItem.TITLE_FIELD),
+					jsonModel.getString(VideoItem.DESCRIPTION_FIELD),
+					jsonModel.getDouble(VideoItem.DURATION_FIELD),
+					jsonModel.getInt(VideoItem.VIEWCOUNT_FIELD)
+			);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return itemToAdd;
 	}
 //endregion
 
