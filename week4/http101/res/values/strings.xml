@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HTTP 101</string>
+    <string name="http_client">Client</string>
+    <string name="ok_http">OkHttp</string>
+    <string name="volley">Volley</string>
+</resources>
