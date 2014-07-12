@@ -1,9 +1,13 @@
 package com.cocomsys.http101;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by yesez on 07-11-14.
  */
 public class VideoItem {
+
+	@SerializedName("id")
 	private String id;
 	private String uploaded;
 	private String title;

@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected ArrayList<VideoItem> doInBackground(Void... params) {
 			String response = service.getByApacheHttpClient();
-			return service.parseToModel(response);
+			return service.parseToModelWithGson(response);
 		}
 
 		@Override

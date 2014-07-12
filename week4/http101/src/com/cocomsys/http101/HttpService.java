@@ -1,5 +1,7 @@
 package com.cocomsys.http101;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -12,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class HttpService {
@@ -101,6 +104,24 @@ public class HttpService {
 			e.printStackTrace();
 		}
 		return itemToAdd;
+	}
+
+	public ArrayList<VideoItem> parseToModelWithGson(String data){
+		ArrayList<VideoItem> list = new ArrayList<VideoItem>();
+		Gson parser = new Gson();
+		try {
+			String items = new JSONObject(data)
+					.getJSONObject(VideoItem.DATA_FIELD)
+					.getJSONArray(VideoItem.ITEMS_FIELD)
+					.toString();
+
+			Type type = new TypeToken<ArrayList<VideoItem>>(){}.getType();
+			list = parser.fromJson(items, type);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return list;
 	}
 //endregion
 
