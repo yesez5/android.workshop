@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">db101</string>
+    <string name="name">Nombre</string>
+    <string name="ok">OK</string>
+    <string name="fill_the_field">rellene el campo</string>
+    <string name="record_saved">Registro Guardado</string>
+</resources>
