@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Async Work</string>
+    <string name="load_data">CARGAR DATOS</string>
+    <string name="counter">CONTAR</string>
+    <string name="loading">CARGANDO</string>
+</resources>
