@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void init(){
-		service = new HttpService();
+		service = new HttpService(this);
 		modelList = new ArrayList<VideoItem>();
 		adapter = new VideosAdapter(modelList, this);
 
@@ -47,6 +47,12 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				getData(HttpMethod.OK_HTTP);
+			}
+		});
+		findViewById(R.id.btn_volley).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getData(HttpMethod.VOLLEY);
 			}
 		});
 	}
@@ -68,7 +74,29 @@ public class MainActivity extends Activity {
 		this.modelList.clear();
 		this.adapter.notifyDataSetChanged();
 
-		new GetDataTask().execute(method);
+		switch (method){
+			case HTTP_CLIENT:
+			case OK_HTTP:
+				new GetDataTask().execute(method);
+				break;
+			case VOLLEY:
+				getByVolley();
+				break;
+		}
+	}
+
+	private void getByVolley(){
+		service.getByVolley(new OnRequestCompletedListener() {
+			@Override
+			public void onResponse(String response) {
+				ArrayList<VideoItem> list = service.parseToModelWithGson(response);
+				setUiFromData(list);
+			}
+			@Override
+			public void onErrorResponse(Throwable error) {
+				//TODO: algo salió mal
+			}
+		});
 	}
 
 	private void setUiFromData(ArrayList<VideoItem> data){

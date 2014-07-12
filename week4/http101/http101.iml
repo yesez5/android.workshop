@@ -18,6 +18,7 @@
     <orderEntry type="library" name="gson" level="project" />
     <orderEntry type="library" name="okio-1.0.0" level="project" />
     <orderEntry type="library" name="okhttp-2.0.0" level="project" />
+    <orderEntry type="library" name="volley" level="project" />
   </component>
 </module>
 
