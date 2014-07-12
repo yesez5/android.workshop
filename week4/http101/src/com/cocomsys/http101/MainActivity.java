@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -15,6 +14,12 @@ public class MainActivity extends Activity {
 	ListView lvData;
 	VideosAdapter adapter;
 	ArrayList<VideoItem> modelList;
+
+	private enum HttpMethod{
+		HTTP_CLIENT,
+		OK_HTTP,
+		VOLLEY
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,25 +39,42 @@ public class MainActivity extends Activity {
 		findViewById(R.id.btn_httpclient).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getByHttpClient();
+				getData(HttpMethod.HTTP_CLIENT);
+			}
+		});
+		findViewById(R.id.btn_okhttp).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getData(HttpMethod.OK_HTTP);
 			}
 		});
 	}
 
-	private void getByHttpClient(){
-		new HttpClientTask().execute();
+	private void getData(HttpMethod method){
+		this.modelList.clear();
+		this.adapter.notifyDataSetChanged();
+
+		new GetDataTask().execute(method);
 	}
 
 	private void setUiFromData(ArrayList<VideoItem> data){
-		this.modelList.clear();
 		this.modelList.addAll(data);
 		this.adapter.notifyDataSetChanged();
 	}
 
-	private class HttpClientTask extends AsyncTask<Void, Void, ArrayList<VideoItem>>{
+	private class GetDataTask extends AsyncTask<HttpMethod, Void, ArrayList<VideoItem>>{
 		@Override
-		protected ArrayList<VideoItem> doInBackground(Void... params) {
-			String response = service.getByApacheHttpClient();
+		protected ArrayList<VideoItem> doInBackground(HttpMethod... params) {
+			HttpMethod method = params[0];
+			String response = "";
+			switch (method){
+				case HTTP_CLIENT:
+					response = service.getByApacheHttpClient();
+					break;
+				case OK_HTTP:
+					response = service.getByOkHttp();
+					break;
+			}
 			return service.parseToModelWithGson(response);
 		}
 

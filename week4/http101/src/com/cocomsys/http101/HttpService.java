@@ -2,6 +2,9 @@ package com.cocomsys.http101;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -10,10 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -69,6 +69,22 @@ public class HttpService {
 		}
 
 		return result.toString();
+	}
+
+	public String getByOkHttp() {
+		String result = "";
+		OkHttpClient client = new OkHttpClient();
+		Request request = new Request.Builder()
+				.url(getSource())
+				.build();
+
+		try {
+			Response response = client.newCall(request).execute();
+			result = response.body().string();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public ArrayList<VideoItem> parseToModel(String data){
