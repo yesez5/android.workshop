@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Imágenes</string>
+    <string name="load">CARGAR</string>
+    <string name="save">GUARDAR</string>
+    <string name="read">LEER</string>
+    <string name="select_img">Seleccionar Imagen</string>
+    <string name="error_loading_img">Ocurrió un error al cargar la imagen</string>
+    <string name="error_retrieving_path">Ocurrió un error obteniendo la ruta de la imagen</string>
+    <string name="error_saving">Ocurrió un error al guardar</string>
+    <string name="saved">GUARDADO!</string>
+    <string name="ready">LISTO!</string>
+</resources>
