@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">actionbar101</string>
+    <string name="save">guardar</string>
+    <string name="settings">config</string>
+</resources>
