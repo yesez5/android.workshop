@@ -7,5 +7,8 @@
     <string name="error_creating_map">Error al crear el mapa :(</string>
     <string name="you_are_here">Usted está aquí</string>
     <string name="visit">visitar</string>
+    <string name="do_something">do something</string>
+    <string name="view_profile">ver perfil</string>
+    <string name="actions">Acciones</string>
 
 </resources>

@@ -9,13 +9,17 @@
             android:id="@+id/tv_marker_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:textSize="18sp"
             />
 
     <Button
-            android:id="@+id/btn_visit"
+            android:id="@+id/btn_actions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/visit"
+            android:text="@string/actions"
             android:layout_marginTop="12dp"
             />
 

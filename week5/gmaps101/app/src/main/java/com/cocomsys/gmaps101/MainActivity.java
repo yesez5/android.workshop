@@ -1,11 +1,14 @@
 package com.cocomsys.gmaps101;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<Friend> friends;
     private HashMap<Marker, Friend> markersMap;
     private Marker userMarker;
+    private Friend currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +61,13 @@ public class MainActivity extends ActionBarActivity {
         setMapPosition(mainMap, defaultCoords);
         addMarkers(friends, mainMap);
 
+        mainMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+
         String userTitle = getString(R.string.you_are_here);
         userMarker = setUserMarker(mainMap, defaultCoords, userTitle);
-        Friend userModel = new Friend(userTitle, defaultCoords);
-        friends.add(userModel);
-        markersMap.put(userMarker, userModel);
+        currentUser = new Friend(userTitle, defaultCoords);
+        friends.add(currentUser);
+        markersMap.put(userMarker, currentUser);
     }
 
     private void configMap() {
@@ -72,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (mainMap == null) {
-            notify(getString(R.string.error_creating_map));
+            showMessage(getString(R.string.error_creating_map));
             return;
         }
 
@@ -87,22 +93,44 @@ public class MainActivity extends ActionBarActivity {
         mainMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                visitFriend(marker);
+                showActionsDialog(marker);
             }
         });
     }
 
-    private void visitFriend(Marker marker){
-        Friend model = markersMap.get(marker);
+    private void showActionsDialog(final Marker marker) {
+        final Friend model = markersMap.get(marker);
         if(model == null) return;
-        notify("visitando a " + model.getName());
+        if(model == currentUser) return;
+
+        String[] items = {getString(R.string.visit), getString(R.string.view_profile)};
+        AlertDialog.Builder actionsDialog = new AlertDialog.Builder(this);
+        actionsDialog.setTitle(R.string.actions);
+        actionsDialog.setCancelable(true);
+        actionsDialog.setItems(items, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        showMessage("visitar a " + model.getName());
+                        break;
+                    case 1:
+                        showMessage("perfil de " + model.getName());
+                        break;
+                }
+            }
+        });
+        actionsDialog.show();
     }
 
-    private void setMapPosition(GoogleMap map, LatLng coords){
+    public void showMessage(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setMapPosition(GoogleMap map, LatLng coords) {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 10));
     }
 
-    private ArrayList<Friend> buildFriendsList(){
+    private ArrayList<Friend> buildFriendsList() {
         ArrayList<Friend> list = new ArrayList<Friend>();
 
         list.add(new Friend("José Martinez", 12.077239, -86.280441));
@@ -112,31 +140,31 @@ public class MainActivity extends ActionBarActivity {
         return list;
     }
 
-    private LatLng getDefaultCoords(){
+    private LatLng getDefaultCoords() {
         return generateCoord(12.106781, -86.229630);
     }
 
     private Marker setUserMarker(GoogleMap map, LatLng coords, String title) {
         return buildMarker(map, title, coords,
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
     }
 
     private void addMarkers(ArrayList<Friend> list, GoogleMap map) {
         if (list == null || list.isEmpty()) return;
         for (Friend model : list) {
-            Marker currentMarker = buildMarker(map, null, generateCoord(model.getLat(), model.getLng()), null);
+            Marker currentMarker = buildMarker(map, model.getName(),
+                    generateCoord(model.getLat(), model.getLng()), null);
             markersMap.put(currentMarker, model);
         }
-        map.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
     }
 
-    private Marker buildMarker(GoogleMap map, String title, LatLng coords, BitmapDescriptor icon){
+    private Marker buildMarker(GoogleMap map, String title, LatLng coords, BitmapDescriptor icon) {
         Marker marker = null;
         MarkerOptions options = new MarkerOptions().position(coords);
 
-        if(!TextUtils.isEmpty(title))
+        if (!TextUtils.isEmpty(title))
             options.title(title);
-        if(icon != null)
+        if (icon != null)
             options.icon(icon);
 
         if (map != null)
@@ -144,23 +172,26 @@ public class MainActivity extends ActionBarActivity {
         return marker;
     }
 
-    private LatLng generateCoord(double lat, double lng){
+    private LatLng generateCoord(double lat, double lng) {
         return new LatLng(lat, lng);
     }
 
-    private void notify(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
+    private View buildWindowView(View v, Friend model) {
+        TextView markerLabel = (TextView) v.findViewById(R.id.tv_marker_label);
+        Button btnActions = (Button)v.findViewById(R.id.btn_actions);
 
-    private View buildWindowView(View v, Friend model){
-        TextView markerLabel = (TextView)v.findViewById(R.id.tv_marker_label);
         String label = model != null && !TextUtils.isEmpty(model.getName()) ? model.getName() : "unknown";
         markerLabel.setText(label);
+
+        if(model != null && model == currentUser)
+            btnActions.setVisibility(View.GONE);
+
         return v;
     }
 
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-        public MarkerInfoWindowAdapter() {}
+        public MarkerInfoWindowAdapter() {
+        }
 
         @Override
         public View getInfoWindow(Marker marker) {
@@ -169,7 +200,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public View getInfoContents(Marker marker) {
-            View v  = getLayoutInflater().inflate(R.layout.map_window_layout, null);
+            View v = getLayoutInflater().inflate(R.layout.map_window_layout, null);
             Friend model = markersMap.get(marker);
             v = buildWindowView(v, model);
             return v;
