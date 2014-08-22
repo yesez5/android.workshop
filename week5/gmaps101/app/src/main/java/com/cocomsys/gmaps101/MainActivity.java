@@ -29,6 +29,8 @@ public class MainActivity extends ActionBarActivity {
     private HashMap<Marker, Friend> markersMap;
     private Marker userMarker;
     private Friend currentUser;
+    String[] actionList;
+    CcListDialog listDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void init() {
         markersMap = new HashMap<Marker, Friend>();
+        actionList = new String[]{getString(R.string.visit), getString(R.string.view_profile)};
         friends = buildFriendsList();
         configMap();
         LatLng defaultCoords = getDefaultCoords();
@@ -84,8 +87,16 @@ public class MainActivity extends ActionBarActivity {
 
         mainMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(com.google.android.gms.maps.model.Marker marker) {
-                marker.showInfoWindow();
+            public boolean onMarkerClick(final Marker marker) {
+                //marker.showInfoWindow();
+                //showActionsDialog(marker);
+                AnimationUtils animUtils = new AnimationUtils();
+                animUtils.animateMarker(mainMap, marker, new AnimationUtils.OnAnimListener() {
+                    @Override
+                    public void onStartDelayed() {
+                        showCustomActionDialog(marker);
+                    }
+                });
                 return true;
             }
         });
@@ -104,22 +115,48 @@ public class MainActivity extends ActionBarActivity {
         if(model == currentUser) return;
 
         String[] items = {getString(R.string.visit), getString(R.string.view_profile)};
-        AlertDialog.Builder actionsDialog = new AlertDialog.Builder(this);
-        actionsDialog.setTitle(R.string.actions);
+        AlertDialog.Builder actionsDialog;
+        actionsDialog = new AlertDialog.Builder(this);
+
+        actionsDialog.setTitle(model.getName());
         actionsDialog.setCancelable(true);
         actionsDialog.setItems(items, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        showMessage("visitar a " + model.getName());
-                        break;
-                    case 1:
-                        showMessage("perfil de " + model.getName());
-                        break;
-                }
+                executeAction(which, model);
             }
         });
         actionsDialog.show();
+    }
+
+    private void showCustomActionDialog(final Marker marker){
+        final Friend model = markersMap.get(marker);
+        if(model == null) return;
+        if(model == currentUser) {
+            marker.showInfoWindow();
+            return;
+        }
+
+        if(listDialog == null){
+            listDialog = new CcListDialog(this, actionList);
+        }
+        listDialog.setData(model.getName(), new CcListDialog.OnCcItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                executeAction(position, model);
+            }
+        });
+        listDialog.show();
+    }
+
+    private void executeAction(int which, Friend model){
+        switch (which) {
+            case 0:
+                showMessage("visitar a " + model.getName());
+                break;
+            case 1:
+                showMessage("ver perfil de " + model.getName());
+                break;
+        }
     }
 
     public void showMessage(String msg) {
@@ -189,9 +226,8 @@ public class MainActivity extends ActionBarActivity {
         return v;
     }
 
-    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-        public MarkerInfoWindowAdapter() {
-        }
+    private class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+        public MarkerInfoWindowAdapter() {}
 
         @Override
         public View getInfoWindow(Marker marker) {
