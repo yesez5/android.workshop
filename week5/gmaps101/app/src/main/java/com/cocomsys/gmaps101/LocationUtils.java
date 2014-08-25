@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -209,8 +210,8 @@ public class LocationUtils {
         switch (locationMode) {
             case Settings.Secure.LOCATION_MODE_HIGH_ACCURACY:
             case Settings.Secure.LOCATION_MODE_SENSORS_ONLY:
-                return true;
             case Settings.Secure.LOCATION_MODE_BATTERY_SAVING:
+                return true;
             case Settings.Secure.LOCATION_MODE_OFF:
             default:
                 return false;

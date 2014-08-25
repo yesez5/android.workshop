@@ -34,6 +34,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".LowBatteryLocationActivity"
+            android:label="@string/title_activity_low_battery_location" >
+        </activity>
     </application>
 
 </manifest>

@@ -10,5 +10,6 @@
     <string name="do_something">do something</string>
     <string name="view_profile">ver perfil</string>
     <string name="actions">Acciones</string>
+    <string name="title_activity_low_battery_location">Low Battery</string>
 
 </resources>
