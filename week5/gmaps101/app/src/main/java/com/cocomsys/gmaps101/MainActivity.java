@@ -2,15 +2,19 @@ package com.cocomsys.gmaps101;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -31,12 +35,25 @@ public class MainActivity extends ActionBarActivity {
     private Friend currentUser;
     String[] actionList;
     CcListDialog listDialog;
+    LocationUtils locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         init();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        reconnectLocationIfApply();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        removeLocationUpdates();
     }
 
     @Override
@@ -55,6 +72,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void init() {
+        if(!LocationUtils.isGoogleServicesAvailable(this)){
+            showMessage("ocurrió un error al obtener los servicios de Google");
+            return;
+        }
         markersMap = new HashMap<Marker, Friend>();
         actionList = new String[]{getString(R.string.visit), getString(R.string.view_profile)};
         friends = buildFriendsList();
@@ -71,6 +92,69 @@ public class MainActivity extends ActionBarActivity {
         currentUser = new Friend(userTitle, defaultCoords);
         friends.add(currentUser);
         markersMap.put(userMarker, currentUser);
+
+        configLocationService();
+    }
+
+    private void removeLocationUpdates(){
+        if(locationManager != null)
+            locationManager.removeUpdates();
+    }
+
+    private void reconnectLocationIfApply(){
+        if(locationManager != null){
+            locationManager.reconnectIfApply();
+        }
+    }
+
+    private void configLocationService(){
+        if(!LocationUtils.isLocationServiceEnabled(this)){
+            String msg = "location service disabled";
+            Log.e(TAG, msg);
+            showMessage(msg);
+            return;
+        }
+
+        locationManager = new LocationUtils(this, 5, 0,
+                LocationRequest.PRIORITY_LOW_POWER,
+                new LocationUtils.OnLocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                updateLocation(location);
+            }
+
+            @Override
+            public void onDisconnected() {
+                Log.e(TAG, "onDisconnected");
+                showMessage("disconnected");
+            }
+
+            @Override
+            public void onConnectionFailed(ConnectionResult connectionResult) {
+                Log.e(TAG, "onConnectionFailed " + connectionResult.toString());
+                showMessage("connection failed");
+            }
+        });
+        boolean isServiceAvailable = LocationUtils.isGoogleServicesAvailable(this);
+        if(isServiceAvailable){
+            locationManager.connect();
+        }else{
+            showMessage("ocurrió un error al conectar");
+            Log.e(TAG, "service unavailable");
+        }
+
+        boolean isConnecting = locationManager.isConnecting();
+        boolean isConnected = locationManager.isConnected();
+        if(!isConnecting && !isConnected){
+            showMessage("ocurrió un error al conectar");
+        }
+    }
+
+    private void updateLocation(Location location){
+        Log.i(TAG, "location changed: " + location.getLatitude() + ":" + location.getLongitude());
+        LatLng coords = LocationUtils.buildLatLng(location);
+        userMarker.setPosition(coords);
+        setMapPosition(mainMap, coords, 16);
     }
 
     private void configMap() {
@@ -85,6 +169,7 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
 
+        mainMap.setMyLocationEnabled(false);
         mainMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
@@ -163,8 +248,12 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    private void setMapPosition(GoogleMap map, LatLng coords, int zoom) {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, zoom));
+    }
+
     private void setMapPosition(GoogleMap map, LatLng coords) {
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 10));
+        setMapPosition(map, coords, 10);
     }
 
     private ArrayList<Friend> buildFriendsList() {
