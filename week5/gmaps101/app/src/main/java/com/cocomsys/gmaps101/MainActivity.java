@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity {
     private Friend currentUser;
     String[] actionList;
     CcListDialog listDialog;
-    LocationUtils locationManager;
+    GoogleLocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,9 +115,9 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
 
-        locationManager = new LocationUtils(this, 5, 0,
-                LocationRequest.PRIORITY_LOW_POWER,
-                new LocationUtils.OnLocationListener() {
+        locationManager = new GoogleLocationManager(this, 5, 0,
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
+                new GoogleLocationManager.OnLocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 updateLocation(location);
@@ -135,6 +135,7 @@ public class MainActivity extends ActionBarActivity {
                 showMessage("connection failed");
             }
         });
+
         boolean isServiceAvailable = LocationUtils.isGoogleServicesAvailable(this);
         if(isServiceAvailable){
             locationManager.connect();
